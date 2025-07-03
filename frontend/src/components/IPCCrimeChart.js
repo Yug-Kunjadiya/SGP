@@ -8,16 +8,18 @@ import {
   Title,
 } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(ArcElement, Tooltip, Legend, Title, ChartDataLabels);
 
 const data = {
   labels: [
-    'Crimes Against Human Body (~25.7%)',
-    'Property Crimes (~24%)',
-    'Public Order Crimes (~18%)',
-    'Other IPC Crimes (~32.3%)',
-    'Crimes Against Women (~12%)',
-    'Cybercrimes (~1.85%)'
+    'Crimes Against Human Body',
+    'Property Crimes',
+    'Public Order Crimes',
+    'Other IPC Crimes',
+    'Crimes Against Women',
+    'Cybercrimes'
   ],
   datasets: [
     {
@@ -51,40 +53,36 @@ const options = {
       },
     },
     legend: {
-      position: 'bottom',
-      labels: {
-        color: '#000000',
-        font: {
-          size: 12,
-          weight: 'bold',
-        },
-        generateLabels: (chart) => {
-          const data = chart.data;
-          if (!data.datasets.length) {
-            return [];
-          }
-          const dataset = data.datasets[0];
-          return data.labels.map((label, i) => {
-            const value = dataset.data[i];
-            return {
-              text: label,
-              fillStyle: dataset.backgroundColor[i],
-              strokeStyle: '#fff',
-              lineWidth: 2,
-              hidden: isNaN(dataset.data[i]) || dataset.data[i] === 0,
-              index: i,
-              // Custom property for number inside circle
-              number: value,
-            };
-          });
-        },
-        // Custom draw function for legend labels to include number in circle
-        // This requires patching the legend after chart is rendered, so we will do it in useEffect
+      display: false,
+    },
+    datalabels: {
+      color: '#fff',
+      formatter: (value, context) => {
+        const dataset = context.chart.data.datasets[0];
+        const total = dataset.data.reduce((acc, val) => acc + val, 0);
+        const percentage = ((value / total) * 100).toFixed(1);
+        const label = context.chart.data.labels[context.dataIndex];
+        return `${label}\n${percentage}%`;
       },
+      font: {
+        weight: 'bold',
+        size: 13,
+      },
+      anchor: 'center',
+      align: 'center',
     },
   },
   cutout: 0,
 };
+
+const legendDetails = [
+  { label: 'Crimes Against Human Body', color: '#2e59d9', percent: '~25.7%' },
+  { label: 'Property Crimes', color: '#17a673', percent: '~24%' },
+  { label: 'Public Order Crimes', color: '#2c9faf', percent: '~18%' },
+  { label: 'Other IPC Crimes', color: '#f4b619', percent: '~32.3%' },
+  { label: 'Crimes Against Women', color: '#e02f2f', percent: '~12%' },
+  { label: 'Cybercrimes', color: '#6c757d', percent: '~1.85%' },
+];
 
 const IPCCrimeChart = () => {
   const [animate, setAnimate] = useState(false);
@@ -120,31 +118,35 @@ const IPCCrimeChart = () => {
     // Patch legend after draw to add number in circle
     const originalDraw = legend.draw;
     legend.draw = function () {
-      originalDraw.call(this);
-      const ctx = this.ctx;
-      this.legendItems.forEach((legendItem) => {
-        const boxWidth = this.options.labels.boxWidth;
-        const x = legendItem.left + boxWidth / 2;
-        const y = legendItem.top + this.options.labels.font.size / 2;
+      try {
+        originalDraw.call(this);
+        const ctx = this.ctx;
+        this.legendItems.forEach((legendItem) => {
+          const boxWidth = this.options.labels.boxWidth;
+          const x = legendItem.left + boxWidth / 2;
+          const y = legendItem.top + this.options.labels.font.size / 2;
 
-        // Draw circle
-        ctx.save();
-        ctx.beginPath();
-        ctx.fillStyle = legendItem.fillStyle;
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.arc(x, y, boxWidth / 2, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+          // Draw circle
+          ctx.save();
+          ctx.beginPath();
+          ctx.fillStyle = legendItem.fillStyle;
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.arc(x, y, boxWidth / 2, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
 
-        // Draw number inside circle
-        ctx.fillStyle = '#fff';
-        ctx.font = `${this.options.labels.font.size * 0.8}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(legendItem.number, x, y);
-        ctx.restore();
-      });
+          // Draw number inside circle
+          ctx.fillStyle = '#fff';
+          ctx.font = `${this.options.labels.font.size * 0.8}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(legendItem.number, x, y);
+          ctx.restore();
+        });
+      } catch (error) {
+        console.error('Error drawing legend numbers:', error);
+      }
     };
     chartInstance.update();
   }, [animate]);
@@ -165,8 +167,36 @@ const IPCCrimeChart = () => {
   };
 
   return (
-    <div ref={chartRef} style={{ maxWidth: 375, margin: '0 auto' }}>
-      <Pie data={data} options={animatedOptions} width={375} height={375} ref={chartRef} />
+    <div ref={chartRef} style={{ maxWidth: 900, margin: '0 auto' }}>
+      <Pie data={data} options={animatedOptions} width={900} height={900} ref={chartRef} />
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        margin: '24px auto 0',
+        maxWidth: 420,
+        background: 'rgba(255,255,255,0.85)',
+        borderRadius: 10,
+        boxShadow: '0 2px 12px #0001',
+        padding: '16px 24px',
+      }}>
+        {legendDetails.map((item, idx) => (
+          <div key={item.label} style={{ display: 'flex', alignItems: 'center', marginBottom: 8, width: '100%' }}>
+            <span style={{
+              display: 'inline-block',
+              width: 18,
+              height: 18,
+              borderRadius: '50%',
+              background: item.color,
+              marginRight: 12,
+              border: '2px solid #fff',
+              boxShadow: '0 1px 4px #0002',
+            }} />
+            <span style={{ fontWeight: 600, color: '#222', flex: 1 }}>{item.label}</span>
+            <span style={{ color: '#444', fontWeight: 500, marginLeft: 8 }}>{item.percent}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
