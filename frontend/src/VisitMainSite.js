@@ -83,6 +83,15 @@ const featureData = [
 
 const VisitMainSite = ({ setSelectedMenu }) => {
   const [modal, setModal] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10); // Adjust threshold as needed
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
@@ -93,8 +102,11 @@ const VisitMainSite = ({ setSelectedMenu }) => {
         top: 0,
         left: 0,
         zIndex: 100,
-        background: 'rgba(30, 41, 59, 0.85)',
-        backdropFilter: 'blur(6px)',
+        background: scrolled
+          ? 'rgba(255, 255, 255, 0.85)'
+          : 'rgba(255, 255, 255, 0.15)',
+        backdropFilter: scrolled ? 'blur(2px)' : 'none',
+        transition: 'background 0.3s, backdrop-filter 0.3s',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -103,8 +115,36 @@ const VisitMainSite = ({ setSelectedMenu }) => {
         boxShadow: '0 2px 12px 0 #1e293b33',
         pr: 6,
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <SecurityIcon sx={{ fontSize: 36, color: '#38bdf8', mr: 1 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, position: 'relative' }}>
+          <Box
+            sx={{
+              height: 60, // visually larger logo
+              width: 60,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              ml: -1, // pull left a bit if needed
+              mr: 1, // space to text
+              mt: -1, // pull up a bit to keep header height
+              mb: -1, // pull down a bit to keep header height
+              zIndex: 1,
+            }}
+          >
+            <img
+              src="/digital-nyay-logo.png"
+              alt="Digital Nyay Logo"
+              style={{
+                height: '100%',
+                width: 'auto',
+                maxWidth: 60,
+                maxHeight: 60,
+                display: 'block',
+                objectFit: 'contain',
+                background: 'transparent',
+              }}
+            />
+          </Box>
           <Typography variant="h5" sx={{ color: '#fff', fontWeight: 800, letterSpacing: 1 }}>
             E-FIR
           </Typography>
@@ -128,8 +168,7 @@ const VisitMainSite = ({ setSelectedMenu }) => {
           width: '100vw',
           height: '100vh',
           zIndex: 0,
-          opacity: 0.18,
-          filter: 'blur(3px)',
+          opacity: 10,
           pointerEvents: 'none',
         }}>
           <img
@@ -147,7 +186,6 @@ const VisitMainSite = ({ setSelectedMenu }) => {
           height: '100vh',
           zIndex: 1,
           background: 'rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(12px)',
           pointerEvents: 'none',
         }} />
 
@@ -155,9 +193,12 @@ const VisitMainSite = ({ setSelectedMenu }) => {
         <Box sx={{
           position: 'relative',
           zIndex: 2,
-          background: 'rgba(255,255,255,0.15)',
-          borderRadius: 6,
-          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+          background: 'rgba(255,255,255,0.12)',
+          border: '1.5px solid rgba(255,255,255,0.25)',
+          backdropFilter: 'blur(2px)',
+          borderRadius: 18,
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+          overflow: 'hidden',
           mx: { xs: 0, md: 6 },
           my: { xs: 0, md: 4 },
           px: { xs: 0, md: 4 },
@@ -166,8 +207,7 @@ const VisitMainSite = ({ setSelectedMenu }) => {
           {/* Hero Section */}
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h2" sx={{ fontWeight: 800, color: '#fff', mb: 2, textShadow: '0 2px 16px #1e293b' }}>
-              Justice at Your Fingertips
-            </Typography>
+                    Nyay Ab Door Nahi...           </Typography>
             <Typography variant="h6" sx={{ color: '#dbeafe', mb: 4, maxWidth: 700, mx: 'auto', textShadow: '0 1px 8px #1e293b' }}>
               File and track FIRs online seamlessly. Empowering faster resolution, transparency, and accountability in your community.
             </Typography>
