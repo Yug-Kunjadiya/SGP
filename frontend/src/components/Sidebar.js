@@ -34,24 +34,6 @@ const Sidebar = ({ onSelect }) => {
       </Typography>
       <Divider />
       <List>
-        <ListItem button onClick={() => onSelect('dashboard')}>
-          <ListItemIcon sx={{ color: '#ecf0f1' }}>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem button onClick={() => onSelect('manageComplaint')}>
-          <ListItemIcon sx={{ color: '#ecf0f1' }}>
-            <AssignmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Manage Complaint" />
-        </ListItem>
-        <ListItem button onClick={() => onSelect('manageCourtDetails')}>
-          <ListItemIcon sx={{ color: '#ecf0f1' }}>
-            <GavelIcon />
-          </ListItemIcon>
-          <ListItemText primary="Manage Court Details" />
-        </ListItem>
         <ListItem button onClick={() => onSelect('visitSite')}>
           <ListItemIcon sx={{ color: '#ecf0f1' }}>
             <LanguageIcon />

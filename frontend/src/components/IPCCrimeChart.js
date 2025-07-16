@@ -86,7 +86,8 @@ const legendDetails = [
 
 const IPCCrimeChart = () => {
   const [animate, setAnimate] = useState(false);
-  const chartRef = useRef(null);
+  const containerRef = useRef(null); // For the div
+  const chartRef = useRef(null);     // For the Pie chart
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -100,8 +101,8 @@ const IPCCrimeChart = () => {
       },
       { threshold: 0.7 }
     );
-    if (chartRef.current && chartRef.current instanceof Element) {
-      observer.observe(chartRef.current);
+    if (containerRef.current && containerRef.current instanceof Element) {
+      observer.observe(containerRef.current);
     }
     return () => observer.disconnect();
   }, []);
@@ -167,8 +168,8 @@ const IPCCrimeChart = () => {
   };
 
   return (
-    <div ref={chartRef} style={{ maxWidth: 900, margin: '0 auto' }}>
-      <Pie data={data} options={animatedOptions} width={900} height={900} ref={chartRef} />
+    <div ref={containerRef} style={{ maxWidth: 900, margin: '0 auto' }}>
+      <Pie data={data} options={animatedOptions} width={900} height={900} />
       <div style={{
         display: 'flex',
         flexDirection: 'column',

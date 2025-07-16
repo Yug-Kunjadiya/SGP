@@ -9,6 +9,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { blue, green, yellow } from '@mui/material/colors';
 import GavelIcon from '@mui/icons-material/Gavel';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -28,6 +30,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import EmailIcon from '@mui/icons-material/Email';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import VanillaTilt from 'vanilla-tilt';
+import AuthForm from './components/AuthForm';
 
 const featureData = [
   {
@@ -95,6 +98,10 @@ const featureData = [
 const VisitMainSite = ({ setSelectedMenu }) => {
   const [modal, setModal] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openPoliceLogin, setOpenPoliceLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true); // for login/register toggle
+  const [loggedIn, setLoggedIn] = useState(false); // optional, for demo
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,7 +114,6 @@ const VisitMainSite = ({ setSelectedMenu }) => {
   const efirLogoRef = useRef();
   const cardRefs = useRef([]);
   const leftBtnRef = useRef();
-  const rightBtnRef = useRef();
 
   // useEffect(() => {
   //   if (efirLogoRef.current) {
@@ -181,14 +187,14 @@ const VisitMainSite = ({ setSelectedMenu }) => {
     <>
       {/* Header */}
       <Box sx={{
-        width: '100%',
+        width: '96%',
         position: 'fixed',
         top: 0,
         left: 0,
         zIndex: 100,
         background: scrolled
-          ? 'rgba(255, 255, 255, 0.15)'
-          : 'rgba(255, 255, 255, 0.15)',
+          ? 'rgba(255, 253, 253, 0.14)'
+          : 'rgba(255, 255, 255, 0.85)',
         backdropFilter: scrolled ? 'blur(0.25px)' : 'none',
         transition: 'background 0.3s, backdrop-filter 0.3s',
         display: 'flex',
@@ -231,16 +237,41 @@ const VisitMainSite = ({ setSelectedMenu }) => {
               }}
             />
           </Box>
-          <Typography variant="h5" sx={{ color: '#fff', fontWeight: 800, letterSpacing: 1 }}>
+          <Typography variant="h5" sx={{ color: '#000000', fontWeight: 800, letterSpacing: 1 }}>
             E-FIR
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, whiteSpace: 'nowrap', maxWidth: { xs: '40vw', md: '300px' }, textOverflow: 'ellipsis', overflow: 'hidden' }}>
-          <GavelIcon sx={{ fontSize: 28, color: '#facc15' }} />
-          <Typography variant="subtitle1" sx={{ color: '#fff', fontWeight: 600, letterSpacing: 0.5 }}>
-            Empowering Justice
-          </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, whiteSpace: 'nowrap', maxWidth: { xs: '40vw', md: '300px' }, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+        <GavelIcon sx={{ fontSize: 28, color: '#facc15' }} />
+        
+        {/* Login Button with Dropdown */}
+        <Box sx={{ position: 'relative' }}>
+          <Button
+            variant="contained"
+            sx={{ fontWeight: 700, textTransform: 'none', backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#115293' } }}
+            aria-controls="login-menu"
+            aria-haspopup="true"
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+          >
+            Login
+          </Button>
+          <Menu
+            id="login-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+            MenuListProps={{
+              'aria-labelledby': 'login-button',
+            }}
+          >
+           <MenuItem onClick={() => { setAnchorEl(null); setOpenPoliceLogin(true); }}>
+              Login as Police
+            </MenuItem>
+            <MenuItem onClick={() => { setAnchorEl(null); alert('Login as Court'); }}>Login as Court</MenuItem>
+            <MenuItem onClick={() => { setAnchorEl(null); alert('Login as Admin'); }}>Login as Admin</MenuItem>
+          </Menu>
         </Box>
+      </Box>
       </Box>
 
       {/* Main Content */}
@@ -275,22 +306,30 @@ const VisitMainSite = ({ setSelectedMenu }) => {
           pointerEvents: 'none',
         }} />
 
-        {/* Main Content Wrapper for Visibility */}
-        <Box sx={{
-          position: 'relative',
-          zIndex: 2,
-          background: 'rgba(255,255,255,0.12)',
-          border: '1.5px solid rgba(255,255,255,0.25)',
-          backdropFilter: 'blur(2px)',
-          borderRadius: 18,
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
-          overflow: 'hidden',
-          mx: { xs: 0, md: 4 },
-          my: { xs: 0, md: 4 },
-          px: { xs: 0, md: 4 },
-          py: { xs: 0, md: 0 },
-         
-        }}>
+      {/* Main Content Wrapper for Visibility */}
+      {/* Insert Black Image here */}
+      <Box sx={{ width: '100%', height: 200, position: 'relative', zIndex: 1, mb: 2 }}>
+        <img
+          src="/black-overlay.png"
+          alt="Black Overlay"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      </Box>
+      <Box sx={{
+        position: 'relative',
+        zIndex: 2,
+        background: 'rgba(3, 36, 103, 0.77)',
+        border: '1.5px solid rgba(255, 0, 0, 0.25)',
+        backdropFilter: 'blur(2px)',
+        borderRadius: 18,
+        boxShadow: '0 8px 32px 0 rgba(0, 17, 255, 0.18)',
+        overflow: 'hidden',
+        mx: { xs: 0, md: 2 },
+        my: { xs: 0, md: 2 },
+        px: { xs: 0, md: 4 },
+        py: { xs: 0, md: 4 },
+       
+      }}>
           {/* Hero Section */}
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h2" sx={{ fontWeight: 800, color: '#fff', mb: 2, textShadow: '0 2px 16px #1e293b' }}>
@@ -309,46 +348,25 @@ const VisitMainSite = ({ setSelectedMenu }) => {
               <Box sx={{ maxWidth: 260, p: 3, borderRadius: 4, background: 'rgba(255,255,255,0.13)', boxShadow: 2, textAlign: 'center', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.18)' }}>
                 <SecurityIcon sx={{ fontSize: 40, color: '#38bdf8', mb: 1 }} />
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600, mb: 1 }}>Secure & Transparent</Typography>
-                <Typography sx={{ color: '#dbeafe', fontSize: '1rem' }}>All your data is encrypted and accessible only to authorized users.</Typography>
+                <Typography sx={{ color: '#000000ff', fontSize: '1rem' }}>All your data is encrypted and accessible only to authorized users.</Typography>
               </Box>
               <Box sx={{ maxWidth: 260, p: 3, borderRadius: 4, background: 'rgba(255,255,255,0.13)', boxShadow: 2, textAlign: 'center', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.18)' }}>
                 <GavelIcon sx={{ fontSize: 40, color: '#facc15', mb: 1 }} />
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600, mb: 1 }}>Fast Resolution</Typography>
-                <Typography sx={{ color: '#dbeafe', fontSize: '1rem' }}>Cases move quickly from filing to resolution, reducing delays.</Typography>
+                <Typography sx={{ color: '#000000ff', fontSize: '1rem' }}>Cases move quickly from filing to resolution, reducing delays.</Typography>
               </Box>
               <Box sx={{ maxWidth: 260, p: 3, borderRadius: 4, background: 'rgba(255,255,255,0.13)', boxShadow: 2, textAlign: 'center', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.18)' }}>
                 <GroupsIcon sx={{ fontSize: 40, color: '#22c55e', mb: 1 }} />
                 <Typography variant="h6" sx={{ color: '#fff', fontWeight: 600, mb: 1 }}>Accessible to All</Typography>
-                <Typography sx={{ color: '#dbeafe', fontSize: '1rem' }}>Citizens, police, and judges can access the system anytime, anywhere.</Typography>
+                <Typography sx={{ color: '#000000ff', fontSize: '1rem' }}>Citizens, police, and judges can access the system anytime, anywhere.</Typography>
               </Box>
             </Box>
           </Box>
 
           {/* Feature Panels Section (with 3D Tilt Effect) */}
           <Box sx={{ my: 10, px: { xs: 1, md: 4 }, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 4, md: 6 }, justifyContent: 'center', alignItems: 'stretch', width: '100%', maxWidth: 1200 }}>
-              {[{
-                key: 'police',
-                title: 'For Police Officers',
-                desc: 'Register complaints, upload evidence, and forward cases to judges efficiently.',
-                button: 'REGISTER COMPLAINT',
-                color: '#2196f3',
-                icon: <SecurityIcon sx={{ fontSize: 56, color: '#2196f3', mb: 1 }} />,
-              }, {
-                key: 'judges',
-                title: 'For Judges',
-                desc: 'Review FIRs, approve or reject cases, and assign necessary actions.',
-                button: 'REVIEW FIRS',
-                color: '#22c55e',
-                icon: <GavelIcon sx={{ fontSize: 56, color: '#22c55e', mb: 1 }} />,
-              }, {
-                key: 'citizens',
-                title: 'For Citizens',
-                desc: 'File FIRs, track case status, and receive updates on your complaints.',
-                button: 'FILE FIR',
-                color: '#facc15',
-                icon: <GroupsIcon sx={{ fontSize: 56, color: '#facc15', mb: 1 }} />,
-              }].map((feature, i) => (
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 3 }, justifyContent: 'center', alignItems: 'stretch', width: '100%', maxWidth: 1200 }}>
+              {featureData.map((feature, i) => (
                 <Box
                   key={feature.key}
                   ref={el => {
@@ -359,11 +377,11 @@ const VisitMainSite = ({ setSelectedMenu }) => {
                     flex: 1,
                     minWidth: 280,
                     maxWidth: 380,
-                    background: 'rgba(30, 64, 175, 0.18)',
+                    background: 'rgba(30, 64, 175, 1)',
                     borderRadius: 6,
                     boxShadow: '0 4px 24px 0 rgba(31, 38, 135, 0.10)',
                     border: `2.5px solid ${feature.color}55`,
-                    p: 4,
+                    p: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -385,6 +403,7 @@ const VisitMainSite = ({ setSelectedMenu }) => {
                       boxShadow: `0 1px 6px 0 ${feature.color}33`,
                       '&:hover': { background: feature.color },
                     }}
+                    onClick={() => setModal(feature)}
                   >
                     {feature.button}
                   </Button>
@@ -500,6 +519,13 @@ const VisitMainSite = ({ setSelectedMenu }) => {
       </Box>
       {/* Footer Section */}
       <FooterSection />
+      <AuthForm
+  isLogin={isLogin}
+  setIsLogin={setIsLogin}
+  setLoggedIn={setLoggedIn}
+  open={openPoliceLogin}
+  onClose={() => setOpenPoliceLogin(false)}
+/>
     </>
   );
 };
@@ -591,15 +617,26 @@ const StatsSection = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [inView]);
 
+  // Move useCountUp calls to top level
+  const count0 = useCountUp(statsData[0].value, inView, 1600 + 0 * 200);
+  const count1 = useCountUp(statsData[1].value, inView, 1600 + 1 * 200);
+  const count2 = useCountUp(statsData[2].value, inView, 1600 + 2 * 200);
+  const count3 = useCountUp(statsData[3].value, inView, 1600 + 3 * 200);
+  const count4 = useCountUp(statsData[4].value, inView, 1600 + 4 * 200);
+  const count5 = useCountUp(statsData[5].value, inView, 1600 + 5 * 200);
+  const count6 = useCountUp(statsData[6].value, inView, 1600 + 6 * 200);
+
+  const counts = [count0, count1, count2, count3, count4, count5, count6];
+
   return (
     <Box ref={ref} sx={{
-      width: '100%',
+      width: '95.5%',
       py: { xs: 4, md: 6 },
       px: { xs: 1, md: 4 },
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      background: 'rgba(255,255,255,0.18)',
+      background: 'rgba(255, 255, 255, 0.87)',
       borderRadius: 6,
       boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.10)',
       mb: 4,
@@ -618,62 +655,59 @@ const StatsSection = () => {
         maxWidth: 1100,
         justifyContent: 'center',
       }}>
-        {statsData.map((stat, idx) => {
-          const count = useCountUp(stat.value, inView, 1600 + idx * 200);
-          return (
-            <Box
-              key={stat.label}
+        {statsData.map((stat, idx) => (
+          <Box
+            key={stat.label}
+            sx={{
+              background: '#fff',
+              borderRadius: 4,
+              boxShadow: '0 4px 24px 0 rgba(31, 38, 135, 0.10)',
+              p: { xs: 2.5, md: 3 },
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              minWidth: 180,
+              maxWidth: 240,
+              m: 'auto',
+              transition: 'transform 0.18s, box-shadow 0.18s',
+              cursor: 'pointer',
+              '&:hover': {
+                transform: 'translateY(-6px) scale(1.04)',
+                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+              },
+            }}
+          >
+            <Box sx={{ mb: 1.5 }}>{stat.icon}</Box>
+            <Typography
+              variant="h3"
               sx={{
-                background: '#fff',
-                borderRadius: 4,
-                boxShadow: '0 4px 24px 0 rgba(31, 38, 135, 0.10)',
-                p: { xs: 2.5, md: 3 },
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                minWidth: 180,
-                maxWidth: 240,
-                m: 'auto',
-                transition: 'transform 0.18s, box-shadow 0.18s',
-                cursor: 'pointer',
-                '&:hover': {
-                  transform: 'translateY(-6px) scale(1.04)',
-                  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
-                },
+                fontWeight: 900,
+                color: theme.palette.primary.main,
+                fontFamily: 'inherit',
+                mb: 0.5,
+                lineHeight: 1.1,
+                letterSpacing: 1,
+                textShadow: '0 2px 8px #e0e7ff',
               }}
             >
-              <Box sx={{ mb: 1.5 }}>{stat.icon}</Box>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 900,
-                  color: theme.palette.primary.main,
-                  fontFamily: 'inherit',
-                  mb: 0.5,
-                  lineHeight: 1.1,
-                  letterSpacing: 1,
-                  textShadow: '0 2px 8px #e0e7ff',
-                }}
-              >
-                {count.toLocaleString()}{stat.suffix}
-              </Typography>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: '#222',
-                  fontWeight: 600,
-                  fontSize: '1.1rem',
-                  textAlign: 'center',
-                  letterSpacing: 0.2,
-                  mt: 0.5,
-                  fontFamily: 'inherit',
-                }}
-              >
-                {stat.label}
-              </Typography>
-            </Box>
-          );
-        })}
+              {counts[idx].toLocaleString()}{stat.suffix}
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: '#222',
+                fontWeight: 600,
+                fontSize: '1.1rem',
+                textAlign: 'center',
+                letterSpacing: 0.2,
+                mt: 0.5,
+                fontFamily: 'inherit',
+              }}
+            >
+              {stat.label}
+            </Typography>
+          </Box>
+        ))}
       </Box>
     </Box>
   );
@@ -698,7 +732,7 @@ const footerLinks = [
     title: 'E-FIR FEATURES',
     items: [
       'Online FIR Filing',
-      'Real-time Case Tracking',
+      'Real-time Case Trackiboxng',
       'Secure Evidence Upload',
       'Judicial Review',
       'Notifications & Updates',
@@ -716,15 +750,15 @@ const footerLinks = [
 ];
 
 const socialIcons = [
-  { icon: <LinkedInIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#0A66C2', href: '#' },
-  { icon: <TwitterIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#1DA1F2', href: '#' },
-  { icon: <EmailIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#D93025', href: '#' },
+  { icon: <LinkedInIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#0A66C2', href: 'https://www.linkedin.com' },
+  { icon: <TwitterIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#1DA1F2', href: 'https://www.twitter.com' },
+  { icon: <EmailIcon sx={{ fontSize: 32, color: '#fff' }} />, bg: '#D93025', href: 'https://mail.google.com' },
 ];
 
 const FooterSection = () => (
   <Box
     sx={{
-      width: '100%',
+      width: '91%',
       background: 'rgba(24, 24, 72, 0.85)',
       color: '#fff',
       pt: 6,
@@ -770,6 +804,7 @@ const FooterSection = () => (
       sx={{
         position: 'relative',
         zIndex: 2,
+        
         maxWidth: 1200,
         mx: 'auto',
         display: 'flex',

@@ -6,10 +6,12 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import FilterMenu from './components/FilterMenu';
 import VisitMainSite from './VisitMainSite';
+import { Routes, Route } from 'react-router-dom';
+import PoliceLoginPage from './pages/PoliceLoginPage';
 
 function App() {
   const [complaints, setComplaints] = useState([]);
-  const [selectedMenu, setSelectedMenu] = useState('dashboard');
+  const [selectedMenu, setSelectedMenu] = useState('visitSite');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filterType, setFilterType] = useState(null);
@@ -42,9 +44,9 @@ function App() {
       (complaint.complaintType && complaint.complaintType.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (complaint.status && complaint.status.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  if (!filterType) {
-    return matchesSearch;
-  }
+    if (!filterType) {
+      return matchesSearch;
+    }
 
     switch (filterType) {
       case 'all':
@@ -78,7 +80,7 @@ function App() {
     return filteredComplaints;
   }, [filteredComplaints, filterType]);
 
-  const renderContent = () => {
+  function RenderContent({ selectedMenu, setSelectedMenu, searchTerm, setSearchTerm, filterAnchorEl, handleFilterClick, handleFilterClose, handleFilterSelect, sortedComplaints }) {
     switch (selectedMenu) {
       case 'dashboard':
         return <Dashboard />;
@@ -129,13 +131,13 @@ function App() {
           </div>
         );
       case 'managePendingComplaints':
-        return null;
+        return <></>;
       case 'visitSite':
         return <VisitMainSite setSelectedMenu={setSelectedMenu} />;
       default:
-        return null;
+        return <></>;
     }
-  };
+  }
 
   return (
     <div className="app-background" style={{ display: 'flex' }}>
@@ -147,7 +149,25 @@ function App() {
           width: selectedMenu !== 'visitSite' ? 'calc(100% - 260px)' : '100%'
         }}
       >
-        {renderContent()}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <RenderContent
+                selectedMenu={selectedMenu}
+                setSelectedMenu={setSelectedMenu}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filterAnchorEl={filterAnchorEl}
+                handleFilterClick={handleFilterClick}
+                handleFilterClose={handleFilterClose}
+                handleFilterSelect={handleFilterSelect}
+                sortedComplaints={sortedComplaints}
+              />
+            }
+          />
+          <Route path="/login/police" element={<PoliceLoginPage />} />
+        </Routes>
       </main>
     </div>
   );
